@@ -19,12 +19,41 @@ int main(int argc, char* argv[]){
   int ab[2];
   lseek(fil, count(ab,fil,0)[0], SEEK_SET);
   run(fil, arr, 0);
+  int fd2=open("cen.data",O_RDWR | O_CREAT | O_APPEND,0644);
   if(decider==1){
     printf("reading cen.txt\n");
-    int fd2=open("cen.data",O_RDWR | O_CREAT,0644);
     write(fd2,arr,sizeof(arr));
     printf("wrote %lu bytes to cen.data\n",sizeof(arr));
   }
   if(decider==2){coldisplay(arr);}
+  if(decider==3){
+    int hold=open("/dev/stdin", O_RDONLY);
+    char buffer[100];
+    read(hold,buffer,sizeof(buffer));
+    int y;
+    int p;
+    char b[50];
+    sscanf(buffer, "%d %s %d", &y, b, &p);
+    arr[115] = (struct pop_entry){.year=y, .population=p, *b};
+    write(fd2, &arr[115], sizeof(arr[115]));
+    printf("Appended data to file: year:%d\tboro=%s\tpop:%d\n",y,b,p);
+  }
+  if(decider==4){
+    coldisplay(arr);
+    int index;
+    int y2;
+    int p2;
+    char b2[50];
+    int hold2=open("/dev/stdin", O_RDONLY);
+    char buffer2[100];
+    char buffer3[100];
+    read(hold2,buffer2,sizeof(buffer2));
+    sscanf(buffer2, "%d", &index);
+    read(hold2,buffer3,sizeof(buffer3));
+    sscanf(buffer3, "%d %s %d", &y2, b2, &p2);
+    arr[index] = (struct pop_entry){.year=y2,.population=p2,*b2};
+    write(fd2,arr,sizeof(arr));
+    printf("Successfully modified index %d to be %d %s %d\n", index, y2,b2,p2);
+  }
   return 0;
 }
